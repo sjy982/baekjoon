@@ -77,7 +77,7 @@ function BFS() {
     }
 }
 
-//다익스트라 알고리즘 풀이 --------
+//다익스트라 알고리즘 풀이
 class Queue {
     constructor() {
         this.storage = {},
