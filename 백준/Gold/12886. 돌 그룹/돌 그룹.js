@@ -28,13 +28,12 @@ class Queue {
 }
 const fs = require('fs');
 let [A,B,C] = fs.readFileSync('/dev/stdin').toString().trim().split(' ').map(Number);
-let ol_check = new Map(); //중복 체크
+let visited = Array.from(Array(1501), () => Array(1501).fill(0));
 console.log(BFS());
 
 function BFS() {
     let que = new Queue();
     que.push([A,B,C]);
-    combiCheckTrue(A,B,C);
     let sn = [[0,1,2], [0,2,1], [1,2,0]]; //select number
     while(que.size()) {
         let rockGup = que.pop_left();
@@ -55,22 +54,13 @@ function BFS() {
                     a = rockGup[n2] - rockGup[n1];
                     b = rockGup[n1] * 2;
                 }
-                if(ol_check.get(`${a}${b}${c}`) === undefined) {
-                    combiCheckTrue(a,b,c);
-                    que.push([a,b,c]);
+                if(visited[a][b]===0) {
+                     visited[a][b] = 1;
+                     visited[b][a] = 1;
+                     que.push([a,b,c]);
                 }
             }
         }
     }
     return 0;
-}
-
-
-function combiCheckTrue(a, b, c) {
-    ol_check.set(`${a}${b}${c}`, true);
-    ol_check.set(`${a}${c}${b}`, true);
-    ol_check.set(`${b}${a}${c}`, true);
-    ol_check.set(`${b}${c}${a}`, true);
-    ol_check.set(`${c}${a}${b}`, true);
-    ol_check.set(`${c}${b}${a}`, true);
 }
