@@ -50,6 +50,7 @@ function BFS() {
     let que = new Queue();
     que.push([0,0,0,0]); //시작하는 칸 포함
     visited[0][0][0] = true;
+    visited[0][0][1] = true;
     let wx = [0, 0, -1, 1];
     let wy = [-1, 1, 0, 0];
     
