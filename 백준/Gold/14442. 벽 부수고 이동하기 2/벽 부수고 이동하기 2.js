@@ -1,4 +1,4 @@
-class Node {
+class Node{
     constructor(x,y,z,c) {
         this.x = x;
         this.y = y;
@@ -6,10 +6,11 @@ class Node {
         this.c = c;
     }
 }
+
 class Queue {
     constructor() {
-        this.head = null;
-        this.tail = null;
+        this.front = null;
+        this.rear = null;
         this.size = 0;
     }
     
@@ -20,26 +21,25 @@ class Queue {
     push(x,y,z,c) {
         let node = new Node(x,y,z,c);
         if(this.size === 0) {
-            this.head = node;
+            this.front = node;
         } else {
-            this.tail.next = node;
+            this.rear.next = node;
         }
-        this.tail = node;
-        this.size++;
-    }
+        this.rear = node;
+        this.size++
+    } 
     
     pop_left() {
-        let temp = this.head;
+        let value = this.front;
         if(this.size === 0) {
-            this.head = null;
-            this.tail = null;
+            this.front = null;
+            this.rear = null;
         } else {
-            this.head = this.head.next;
+            this.front = this.front.next;
         }
         this.size--;
-        return temp
+        return value;
     }
-    
 }
 
 const fs = require('fs');
