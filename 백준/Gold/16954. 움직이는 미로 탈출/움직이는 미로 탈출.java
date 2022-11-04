@@ -15,6 +15,7 @@ public class Main {
     static char board[][] = new char[8][8];
     static boolean visited[][] = new boolean[8][8];
     static ArrayList<Coordinate> wall_coor = new ArrayList<Coordinate>();
+    static ArrayList<Coordinate> visited_true = new ArrayList<Coordinate>();
     public static void main(String args[]) throws IOException {
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       for(int i=0; i<8; i++) {
@@ -34,7 +35,6 @@ public class Main {
         que.add(new Coordinate(0,7));
         while(!que.isEmpty()) {
             int sz = que.size();
-            visited = new boolean[8][8];
             for(int j=0; j<sz; j++) {
                 Coordinate v = que.poll();
                 if((wall_coor.size() == 0) || ((v.x == 7) && (v.y == 0))) {
@@ -49,12 +49,14 @@ public class Main {
                     if((nx>=0 && nx<=7) && (ny>=0 && ny<=7)) {
                         if(board[ny][nx] != '#' && !visited[ny][nx]) {
                             visited[ny][nx] = true;
+                            visited_true.add(new Coordinate(nx, ny));
                             que.add(new Coordinate(nx, ny));
                         }
                     }
                 }
             }
             move_wall();
+            back_visited();
         }
         return 0;
     }
@@ -74,5 +76,12 @@ public class Main {
             }
             wall_coor = nWall_coor;
         }
+    }
+    
+    static void back_visited() {
+        for(int i=0; i<visited_true.size(); i++) {
+            visited[visited_true.get(i).y][visited_true.get(i).x] = false;
+        }
+        visited_true = new ArrayList<Coordinate>();
     }
 }
