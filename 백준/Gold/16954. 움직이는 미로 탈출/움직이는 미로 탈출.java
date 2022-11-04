@@ -34,6 +34,7 @@ public class Main {
         que.add(new Coordinate(0,7));
         while(!que.isEmpty()) {
             int sz = que.size();
+            visited = new boolean[8][8];
             for(int j=0; j<sz; j++) {
                 Coordinate v = que.poll();
                 if((wall_coor.size() == 0) || ((v.x == 7) && (v.y == 0))) {
@@ -46,7 +47,8 @@ public class Main {
                     int nx = v.x + dx[i];
                     int ny = v.y + dy[i];
                     if((nx>=0 && nx<=7) && (ny>=0 && ny<=7)) {
-                        if(board[ny][nx] != '#') {
+                        if(board[ny][nx] != '#' && !visited[ny][nx]) {
+                            visited[ny][nx] = true;
                             que.add(new Coordinate(nx, ny));
                         }
                     }
