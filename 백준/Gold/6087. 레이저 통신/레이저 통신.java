@@ -63,15 +63,7 @@ public class Main {
           }
       }
       BFS();
-    //   String ans = new String("");
-    //   for(int i=0; i<H; i++) {
-    //       for(int j=0; j<W; j++) {
-    //           ans += Integer.toString(map[i][j].v);
-    //       }
-    //       ans += '\n';
-    //   }
-    //   System.out.println(ans);
-    System.out.println(map[end.y][end.x].v);
+      System.out.println(map[end.y][end.x].v);
     }
     
     static void BFS() {
