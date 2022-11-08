@@ -14,19 +14,12 @@ public class Main {
           coin[i] = Integer.parseInt(br.readLine());
       }
       while(K!=0) {
-          for(int i=0; i<N; i++) {
-              if(coin[i] == K) {
-                  ans += K/coin[i];
-                  K = K%coin[i];
-              } else if(coin[i] > K) {
-                  ans += K/coin[i-1];
-                  K = K%coin[i-1];
-              } else if(i == N-1) {
-                  //마지막
-                  ans += K/coin[i];
-                  K = K%coin[i];
-              }
-          }
+         for(int i=N-1; i>=0; i--) {
+             if(K >= coin[i]) {
+                 ans += K/coin[i];
+                 K = K%coin[i];
+             }
+         }
       }
       System.out.println(ans);
     }
