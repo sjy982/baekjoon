@@ -1,21 +1,9 @@
 import java.io.*;
 import java.util.*;
 
-class Tree {
-    int v,ind;
-    Tree left,right;
-    Tree(int v, int ind) {
-        this.v = v;
-        this.ind = ind;
-    }
-}
-
 public class Main {
     static int N;
     static int post[], in[], in_ind[];
-    static Tree tree;
-    static boolean visited[];
-    static int pi_loca;
     static StringBuilder ans = new StringBuilder();
     public static void main(String args[]) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -23,8 +11,6 @@ public class Main {
         post = new int[N];
         in = new int[N];
         in_ind = new int[N+1];
-        visited = new boolean[N];
-        pi_loca = N-1;
         for(int i=0; i<2; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             if(i==0) {
@@ -40,37 +26,20 @@ public class Main {
                 }
             }
         }
-        tree = new Tree(post[pi_loca], in_ind[post[pi_loca]]);
-        visited[in_ind[post[pi_loca]]] = true;
-        pi_loca -= 1;
-        make_tree(tree);
-        preorder(tree);
+        get_pre(0, N-1, 0, N-1);
         System.out.println(ans.toString());
     }
     
-    static void make_tree(Tree node) {
-        if(node.ind != N-1) {
-            if(!visited[node.ind+1]) {
-                visited[in_ind[post[pi_loca]]] = true;
-                node.right = new Tree(post[pi_loca], in_ind[post[pi_loca]]);
-                pi_loca -= 1;
-                make_tree(node.right);
-            }
+    static void get_pre(int in_s, int in_e, int post_s, int post_e) {
+        int rt_v = post[post_e];
+        ans.append(rt_v + " ");
+        
+        int rt_ind = in_ind[rt_v];
+        if(rt_ind != in_s) {
+            get_pre(in_s, rt_ind - 1, post_s, post_s + (rt_ind - 1 - in_s)); //왼쪽
         }
-        if(node.ind != 0) {
-           if(!visited[node.ind-1]) {
-               visited[in_ind[post[pi_loca]]] = true;
-               node.left = new Tree(post[pi_loca], in_ind[post[pi_loca]]);
-               pi_loca -= 1;
-               make_tree(node.left);
-           }
+        if(rt_ind != in_e) {
+            get_pre(rt_ind + 1, in_e, post_e - (in_e - rt_ind), post_e - 1); //오른쪽
         }
-    }
-    
-    static void preorder(Tree node) {
-        if(node == null) return;
-        ans.append(node.v + " ");
-        preorder(node.left);
-        preorder(node.right);
     }
 }
