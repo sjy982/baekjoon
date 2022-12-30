@@ -10,7 +10,6 @@ public class Main {
       x = Double.parseDouble(st.nextToken());
       y = Double.parseDouble(st.nextToken());
       c = Double.parseDouble(st.nextToken());
-      double d = 26.033749999999998;
       double min_width = 0;
       double max_width = Math.min(x,y);
       //이분 탐색
@@ -32,6 +31,6 @@ public class Main {
               }
           }
       }
-      System.out.println(Math.floor(ans*1000)/1000.0); 
+      System.out.println(Math.round(ans*1000)/1000.0); 
     }
 }
