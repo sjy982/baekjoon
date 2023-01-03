@@ -20,10 +20,8 @@ public class Main {
       }
       max_len -= 1;
       //이분 탐색
-      while(min_len != max_len) {
-          long mid_len;
-          if((min_len + max_len)%2 == 0) mid_len = (min_len + max_len)/2;
-          else mid_len = (min_len + max_len)/2 + 1;
+      while(min_len <= max_len) {
+          long mid_len = (min_len + max_len)/2;
           // 나무 자르기
           long len_cout = 0;
           for(int i=0; i<N; i++) {
@@ -31,11 +29,11 @@ public class Main {
           }
           //최소 길이, 최대 길이 업데이트
           if(len_cout>=M) {
-              min_len = mid_len;
+              min_len = mid_len + 1;
           } else {
               max_len = mid_len - 1;
           }
       }
-      System.out.println(min_len);
+      System.out.println(min_len-1);
     }
 }
