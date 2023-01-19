@@ -37,8 +37,7 @@ public class Main {
             a_sn.push(gob2);
             DFS();
             a_sn.pop();
-        }
-        if (n % 3 == 0 && !end) {
+        } else if (n % 3 == 0) {
             long na3 = n / 3;
             if (b_sn.contains(na3) && !a_sn.contains(na3)) {
                 a_sn.push(na3);
