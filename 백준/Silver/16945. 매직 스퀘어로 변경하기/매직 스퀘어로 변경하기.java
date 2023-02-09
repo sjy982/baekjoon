@@ -5,7 +5,7 @@ public class Main {
     static int board[][] = new int[3][3];
     static boolean visited[] = new boolean[10];
     static int ans = Integer.MAX_VALUE;
-    static Stack<Integer> result = new Stack<>();
+    static ArrayList<Integer> result = new ArrayList<>();
     public static void main(String args[]) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         for (int i = 0; i < 3; i++) {
@@ -30,10 +30,10 @@ public class Main {
         }
         for(int i=1; i<=9; i++) {
             if(!visited[i]) {
-                result.push(i);
+                result.add(i);
                 visited[i] = true;
                 DFS();
-                result.pop();
+                result.remove(result.size()-1);
                 visited[i] = false;
             }
         }
