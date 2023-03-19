@@ -35,9 +35,11 @@ public class Main {
         int tlp_op1 = tlp_find(oprand1);
         int tlp_op2 = tlp_find(oprand2);
         if(tlp_op1 != tlp_op2) {
-            //서로 다른 집합이기 때문에 합쳐준다.
-            //합쳐주는 기준은 딱히 없고 op1집합의 op2집합을 넣어줌
-            set[tlp_op2] = set[tlp_op1];
+            if(tlp_op1 < tlp_op2) {
+                set[tlp_op2] = tlp_op1;
+            } else {
+                set[tlp_op1] = tlp_op2;
+            }
         }
     }
     
@@ -45,6 +47,8 @@ public class Main {
         if(oprand == set[oprand]) {
             return oprand;
         }
-        return tlp_find(set[oprand]);
+        int v = tlp_find(set[oprand]);
+        set[oprand] = v;// 높이 압축
+        return v;
     }
 }
