@@ -18,15 +18,14 @@ class Heap {
     
     public void insert(int value) {
         arr.add(value);
-        int v_ind = this.size();
-        while(v_ind != 1) {
-            //현재 값이 루트 노드에 있지 않다면 부모 노드와 비교해준다.
-            int pv_ind = v_ind/2; //자식 노드의 인덱스 값 / 2 -> 정수형 나눗셈
-            int p_value = this.get(pv_ind);
-            if(value > p_value) {
-                arr.set(pv_ind, value);
-                arr.set(v_ind, p_value);
-                v_ind = pv_ind;
+        int ch_ind = this.size();
+        while(ch_ind != 1) {
+            int pa_ind = ch_ind / 2;
+            if(this.get(pa_ind) < this.get(ch_ind)) {
+                int tmp = this.get(pa_ind);
+                arr.set(pa_ind, value);
+                arr.set(ch_ind, tmp);
+                ch_ind = pa_ind;
             } else break;
         }
     } 
@@ -34,42 +33,22 @@ class Heap {
     public int delete() {
         if(this.size() == 0) return 0;
         int root_value = this.get(1);
-        int p_value = this.get(this.size()); //정렬 대상
-        int p_ind = 1;
-        arr.set(1, p_value);
+        arr.set(1, this.get(this.size()));
         arr.remove(this.size());
-        int lc_ind = p_ind * 2;
-        while(lc_ind<=this.size()) {
-            int rc_ind = lc_ind + 1;
-            if(rc_ind<=this.size()) {
-                //오른쪽 자식이 존재한다면
-                if(this.get(lc_ind) <= this.get(rc_ind)) {
-                    //오른쪽 자식의 우선순위가 더 높다면
-                    int c_value = this.get(rc_ind);
-                    if(p_value < c_value) {
-                        arr.set(p_ind, c_value);
-                        arr.set(rc_ind, p_value);
-                        p_ind = rc_ind;
-                    } else break;
-                } else {
-                    //왼쪽 자식의 우선순위가 더 높다면
-                    int c_value = this.get(lc_ind);
-                    if(p_value < c_value) {
-                        arr.set(p_ind, c_value);
-                        arr.set(lc_ind, p_value);
-                        p_ind = lc_ind;
-                    } else break;
-                }
-            } else {
-                //왼쪽만
-                int c_value = this.get(lc_ind);
-                if(p_value < c_value) {
-                    arr.set(p_ind, c_value);
-                    arr.set(lc_ind, p_value);
-                    p_ind = lc_ind;
-                } else break;
+        int pa_ind = 1;
+        while(pa_ind * 2 <= this.size()) {
+            int ch_ind = pa_ind * 2;
+            if((ch_ind + 1 <= this.size()) && this.get(ch_ind) < this.get(ch_ind + 1)) {
+                //오른쪽 자식이 존재하면서, 오른쪽 자식의 우선 순위가 더 높다면
+                ch_ind += 1;
             }
-            lc_ind = p_ind * 2;
+            //자식 노드의 우선 순위가 높다면
+            if(this.get(pa_ind) < this.get(ch_ind)) {
+                int tmp = this.get(pa_ind);
+                arr.set(pa_ind, this.get(ch_ind));
+                arr.set(ch_ind, tmp);
+                pa_ind = ch_ind;
+            } else break;
         }
         return root_value;
     }
