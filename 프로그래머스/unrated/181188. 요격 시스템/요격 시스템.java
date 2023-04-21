@@ -16,8 +16,7 @@ class Solution {
         Range range = new Range(0, targets[targets.length-1][1]); //최대 범위
         for(int i=0; i<targets.length; i++) {
             if((range.s <= targets[i][0]) && (targets[i][0] < range.e)) {
-                if(range.e <= targets[i][1]) range = new Range(targets[i][0], range.e);
-                else range = new Range(targets[i][0], targets[i][1]);
+                range = new Range(targets[i][0], Math.min(range.e, targets[i][1]));
             } else {
                 answer += 1;
                 range = new Range(targets[i][0], targets[i][1]);
