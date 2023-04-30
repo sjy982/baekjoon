@@ -17,30 +17,12 @@ class Solution {
         }
         while (d_list.size() != 0 || p_list.size() != 0) {
             int house = 0;
-            int box = 0;
-            int cout = 1; //이동 횟수
-            if (d_list.size() == 0) {
-                house = p_list.get(p_list.size()-1).h;
-                box = p_list.get(p_list.size()-1).c;
-            } else if (p_list.size() == 0) {
-                house = d_list.get(d_list.size()-1).h;
-                box = d_list.get(d_list.size()-1).c;
-            } else {
-                if (d_list.get(d_list.size() - 1).h == p_list.get(p_list.size() - 1).h) {
-                    house = d_list.get(d_list.size() - 1).h;
-                    box = d_list.get(d_list.size() - 1).c >= p_list.get(p_list.size() - 1).c ? d_list.get(d_list.size() - 1).c : p_list.get(p_list.size() - 1).c;
-                } else if (d_list.get(d_list.size() - 1).h > p_list.get(p_list.size() - 1).h) {
-                    house = d_list.get(d_list.size() - 1).h;
-                    box = d_list.get(d_list.size() - 1).c;
-                } else {
-                    house = p_list.get(p_list.size() - 1).h;
-                    box = p_list.get(p_list.size() - 1).c;
-                }
-            }
-            while (cap * cout < box) cout += 1;
-            delivery_pickup(d_list, cap * cout);
-            delivery_pickup(p_list, cap * cout);
-            answer += (house * cout) * 2;
+            if(d_list.size() == 0) house = p_list.get(p_list.size()-1).h;
+            else if(p_list.size() == 0) house = d_list.get(d_list.size()-1).h;
+            else house = Math.max(d_list.get(d_list.size()-1).h, p_list.get(p_list.size()-1).h);
+            delivery_pickup(d_list, cap);
+            delivery_pickup(p_list, cap);
+            answer += house * 2;
         }
         return answer;
     }
