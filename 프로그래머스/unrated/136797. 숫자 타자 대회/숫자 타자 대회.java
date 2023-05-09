@@ -1,6 +1,6 @@
 import java.util.*;
 class Node {
-    char l,r;
+    char l, r;
     int c;
     Node(char l, char r, int c) {
         this.l = l;
@@ -10,33 +10,28 @@ class Node {
 }
 
 class Point {
-    int x, y, w;
-    Point(int x, int y, int w) {
+    int x,y;
+    Point(int x, int y) {
         this.x = x;
         this.y = y;
-        this.w = w;
     }
 }
 class Solution {
-    static int[][][] visited;
     static final int[] dx = {-1, -1, 0, 1, 1, 1, 0, -1};
     static final int[] dy = {0, -1, -1, -1, 0, 1, 1, 1};
     static final int[] weight = {2, 3, 2, 3, 2, 3, 2, 3};
-    static HashMap<Character, Point> charToPoint = new HashMap<>();
-    static char[][] pad = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}, {'*', '0', '#'}};
+    static final int[][] pad_point = {{3, 1}, {0, 0}, {0, 1}, {0, 2}, {1, 0}, {1, 1}, {1, 2}, {2, 0}, {2, 1}, {2, 2}, {3, 0}, {}, {3, 2}};
+    static int[][][] visited;
     public int solution(String numbers) {
         int answer = Integer.MAX_VALUE;
-        for(int i=0; i<pad.length; i++) {
-            for(int j=0; j<pad[i].length; j++) charToPoint.put(pad[i][j], new Point(j, i, 0));
-        }
-        visited = new int[10][10][numbers.length()+1];
+        visited = new int[10][10][numbers.length() + 1];
         for(int i=0; i<visited.length; i++) {
             for(int j=0; j<visited[i].length; j++) Arrays.fill(visited[i][j], Integer.MAX_VALUE);
         }
         BFS(new Node('4', '6', 0), numbers);
         for(int i=0; i<visited.length; i++) {
             for(int j=0; j<visited[i].length; j++) {
-                answer = Math.min(answer, visited[i][j][numbers.length()]);
+                answer = Math.min(visited[i][j][numbers.length()], answer);
             }
         }
         return answer;
@@ -48,50 +43,61 @@ class Solution {
         while(que.size() != 0) {
             Node n = que.poll();
             if(n.c == numbers.length()) continue;
-            Point target = charToPoint.get(numbers.charAt(n.c));
+            Point target = conversion(numbers.charAt(n.c));
+            Point s = new Point(-1, -1);
             for(int i=0; i<2; i++) {
-                Point n_start = new Point(-1, -1, 0);
-                char next_l = n.l;
-                char next_r = n.r;
+                char left = n.l;
+                char right = n.r;
                 if(i==0) {
-                    n_start = charToPoint.get(n.l);
-                    next_l = numbers.charAt(n.c);
-                } else {
-                    n_start = charToPoint.get(n.r);
-                    next_r = numbers.charAt(n.c);
+                    //왼쪽 손가락으로 누르는 경우
+                    s = conversion(n.l);
+                    left = numbers.charAt(n.c);
+                } else if(i==1) {
+                    //오른쪽 손가락으로 누르는 경우
+                    s = conversion(n.r);
+                    right = numbers.charAt(n.c);
                 }
-                if(next_l != next_r) {
-                    //같은 버튼위에 두 손가락이 올라갈 수 없음
-                    int weight = np_BFS(n_start, target) + visited[n.l - '0'][n.r - '0'][n.c];
-                    if(visited[next_l - '0'][next_r - '0'][n.c + 1] > weight) {
-                        que.add(new Node(next_l, next_r, n.c + 1));
-                        visited[next_l - '0'][next_r - '0'][n.c + 1] = weight;
+                if((left != right)){
+                    int next_w = visited[n.l - '0'][n.r - '0'][n.c] + pad_BFS(s, target);
+                    if(visited[left - '0'][right - '0'][n.c + 1] > next_w) {
+                        que.add(new Node(left, right, n.c + 1));
+                        visited[left - '0'][right - '0'][n.c + 1] = next_w;
                     }
                 }
             }
         }
     }
     
-    static int np_BFS(Point start, Point target) {
-        Queue<Point> que = new LinkedList<>();
-        int[][] np_visited = new int[4][3];
-        for(int i=0; i<4; i++) Arrays.fill(np_visited[i], Integer.MAX_VALUE);
-        que.add(start);
+    static int pad_BFS(Point start, Point target) {
+        //pad 최소 가중치
         if((start.x == target.x) && (start.y == target.y)) return 1;
-        np_visited[start.y][start.x] = 1;
+        Queue<Point> que = new LinkedList<>();
+        int[][] visited = new int[4][3];
+        for(int i=0; i<visited.length; i++) Arrays.fill(visited[i], Integer.MAX_VALUE);
+        que.add(start);
+        visited[start.y][start.x] = 0;
         while(que.size() != 0) {
             Point n = que.poll();
             for(int i=0; i<dx.length; i++) {
                 int nx = n.x + dx[i];
                 int ny = n.y + dy[i];
-                if((0 <= nx && nx <= 2) && (0<= ny && ny <= 3)) {
-                    if(np_visited[ny][nx] > (n.w + weight[i])) {
-                        que.add(new Point(nx, ny, n.w + weight[i]));
-                        np_visited[ny][nx] = n.w + weight[i];
+                if((0 <= nx && nx <= 2) && (0 <= ny && ny <= 3)) {
+                    int next_weight = visited[n.y][n.x] + weight[i];
+                    if(visited[ny][nx] > next_weight) {
+                        que.add(new Point(nx, ny));
+                        visited[ny][nx] = next_weight;
                     }
                 }
             }
         }
-        return np_visited[target.y][target.x];
+        return visited[target.y][target.x];
+    }
+    
+    static Point conversion(char c) {
+        int index = -1;
+        if(c == '*') index = 10;
+        else if(c == '#') index = 12;
+        index = c - '0';
+        return new Point(pad_point[index][1], pad_point[index][0]);
     }
 }
