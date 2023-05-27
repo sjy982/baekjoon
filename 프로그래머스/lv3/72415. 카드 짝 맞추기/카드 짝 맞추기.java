@@ -56,7 +56,7 @@ class Solution {
                     }
                 } else {
                     //선택한 카드가 있을 때
-                    if(n.select == board[n.y][n.x]) {
+                    if(!visited[n.y][n.x][next_set] && n.select == board[n.y][n.x]) {
                         //카드의 값이 같을 때
                         que.add(new Node(n.x, n.y, n.c + 1, next_set, -1));
                         visited[n.y][n.x][next_set] = true;
