@@ -42,7 +42,7 @@ class Solution {
             result.remove(result.size()-1);
         }
     }
-    
+
     static void permutation_DFS(String[] banned_id) {
         //순열
         if(result.size() == banned_id.length) {
