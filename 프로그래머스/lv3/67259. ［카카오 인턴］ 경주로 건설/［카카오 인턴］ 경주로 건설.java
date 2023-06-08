@@ -29,7 +29,7 @@ class Solution {
         dijkstra(board);
         return Math.min(dp[H-1][W-1][2], dp[H-1][W-1][3]);
     }
-    
+
     static void dijkstra(int[][] board) {
         PriorityQueue<Node> pque = new PriorityQueue<>();
         dp[0][0][2] = 0;
