@@ -8,15 +8,8 @@ class Solution {
         if(str.equals("")) return "";
         String[] separ_str = separation_parStr(str);
         StringBuilder sb = new StringBuilder();
-        if(right_parStr(separ_str[0])) {
-            sb.append(separ_str[0]);
-            sb.append(convert_par(separ_str[1]));
-        } else {
-            sb.append('(');
-            sb.append(convert_par(separ_str[1]));
-            sb.append(')');
-            sb.append(reverse_parStr(separ_str[0]));
-        }
+        if(right_parStr(separ_str[0])) sb.append(separ_str[0] + convert_par(separ_str[1]));
+        else sb.append('(' + convert_par(separ_str[1]) + ')' + reverse_parStr(separ_str[0]));
         return sb.toString();
     }
     
