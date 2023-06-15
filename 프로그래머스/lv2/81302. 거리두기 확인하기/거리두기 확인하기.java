@@ -38,14 +38,13 @@ class Solution {
         setting_room(start, visited, room); //상,하,좌,우로 벽이 있다면 그 벽뒤는 검사하지 않는다.
         while(que.size() != 0) {
             Point n = que.poll();
-            if((start.y != n.y || start.x != n.x) && room[n.y].charAt(n.x) == 'P' && find_MDistance(start, n) <= 2) return false;
+            if((start.y != n.y || start.x != n.x) && room[n.y].charAt(n.x) == 'P') return false;
             for(int i=0; i<4; i++) {
-                int nx = n.x + dx[i];
-                int ny = n.y + dy[i];
-                if((0 <= nx && nx <= 4) && (0 <= ny && ny <= 4)) {
-                    if(room[ny].charAt(nx) != 'X' && !visited[ny][nx]) {
-                        que.add(new Point(nx, ny));
-                        visited[ny][nx] = true;
+                Point np = new Point(n.x + dx[i], n.y + dy[i]);
+                if(check_range(np)) {
+                    if(room[np.y].charAt(np.x) != 'X' && !visited[np.y][np.x] && find_MDistance(start, np) <= 2) {
+                        que.add(np);
+                        visited[np.y][np.x] = true;
                     }
                 }
             }
@@ -55,14 +54,16 @@ class Solution {
     
     static void setting_room(Point p, boolean[][] visited, String[] room) {
         for(int i=0; i<4; i++) {
-            Point cp = new Point(p.x + dx[i], p.y + dy[i]);
-            boolean behind_wall = false;
-            while((0 <= cp.x && cp.x <= 4) && (0 <= cp.y && cp.y <= 4)) {
-                if(room[cp.y].charAt(cp.x) == 'X') behind_wall = true;
-                if(behind_wall) visited[cp.y][cp.x] = true;
-                cp = new Point(cp.x + dx[i],  cp.y + dy[i]);
+            Point np = new Point(p.x + dx[i], p.y + dy[i]);
+            if(check_range(np) && room[np.y].charAt(np.x) == 'X') {
+                if(check_range(new Point(np.x + dx[i], np.y + dy[i]))) visited[np.y + dy[i]][np.x + dx[i]] = true;
             }
         }
+    }
+    
+    static boolean check_range(Point p) {
+        if((0 <= p.x && p.x <= 4) && (0 <= p.y && p.y <= 4)) return true;
+        return false;
     }
     
     static int find_MDistance(Point p1, Point p2) {
