@@ -12,7 +12,7 @@ class Solution {
                 if((j + 1) % i == 0) {
                     if(before_sb.toString().equals(cur_sb.toString())) {
                         same_cnt += 1;
-                        if(j == s.length() - 1) str_cnt += String.valueOf(same_cnt).length() + i;
+                        if(j == s.length() - 1) str_cnt += String.valueOf(same_cnt+1).length() + i;
                     } else {
                         if((j + 1) / i != 1) {
                             if(same_cnt == 0) str_cnt += i;
