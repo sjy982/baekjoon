@@ -2,12 +2,11 @@ import java.util.*;
 class Solution {
     static HashSet<Integer> result = new HashSet<>();
     static ArrayList<HashSet<Integer>> cd_key_list = new ArrayList<>();
-    static int answer = 0;
     public int solution(String[][] relation) {
         for(int i=1; i<=relation[0].length; i++) {
             DFS(i, relation, 0);
         }
-        return answer;
+        return cd_key_list.size();
     }
     
     static void DFS(int depth, String[][] relation, int ind) {
@@ -17,7 +16,6 @@ class Solution {
                     HashSet<Integer> set = new HashSet<>();
                     set.addAll(result);
                     cd_key_list.add(set);
-                    answer += 1;
                 }
             }
             return;
