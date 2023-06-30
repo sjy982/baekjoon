@@ -1,18 +1,18 @@
 import java.util.*;
 class Solution {
-    static ArrayList<ArrayList<Integer>> graph;
+    static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
     static boolean[] visited;
+    static int answer = Integer.MAX_VALUE;
+    static int N;
     public int solution(int n, int[][] wires) {
-        int answer = Integer.MAX_VALUE;
+        N = n;
+        visited = new boolean[n + 1];
+        for(int i=0; i<=n; i++) graph.add(new ArrayList<>());
         for(int i=0; i<wires.length; i++) {
-            make_graph(wires, i, n);
-            visited = new boolean[n + 1];
-            ArrayList<Integer> cnt_list = new ArrayList<>();
-            for(int j=1; j<=n; j++) {
-                if(!visited[j]) cnt_list.add(DFS(j));
-            }
-            answer = Math.min(answer, Math.abs(cnt_list.get(1) - cnt_list.get(0)));
+            graph.get(wires[i][0]).add(wires[i][1]);
+            graph.get(wires[i][1]).add(wires[i][0]);
         }
+        DFS(1);
         return answer;
     }
     
@@ -23,17 +23,7 @@ class Solution {
             int b = graph.get(a).get(i);
             if(!visited[b]) cnt += DFS(b);
         }
+        answer = Math.min(answer, Math.abs((N - cnt) - cnt));
         return cnt;
-    }
-    
-    static void make_graph(int[][] wires, int ind, int n) {
-        graph = new ArrayList<>();
-        for(int i=0; i<=n; i++) graph.add(new ArrayList<>());
-        for(int i=0; i<wires.length; i++) {
-            if(i != ind) {
-                graph.get(wires[i][0]).add(wires[i][1]);
-                graph.get(wires[i][1]).add(wires[i][0]);
-            }
-        }
     }
 }
