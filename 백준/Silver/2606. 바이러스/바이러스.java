@@ -1,37 +1,43 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N,M;
-    static ArrayList<ArrayList<Integer>> graph_list = new ArrayList<>();
-    static boolean visited[];
-    static int cout = 0;
+    static ArrayList<Integer>[] graph;
+    static boolean[] visited;
+    static int N, M;
+    static int answer = -1;
     public static void main(String args[]) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        visited = new boolean[N+1];
-        for(int i=0; i<=N; i++) graph_list.add(new ArrayList<Integer>());
         M = Integer.parseInt(br.readLine());
+        
+        graph = new ArrayList[N + 1];
+        visited = new boolean[N + 1];
+        
+        for(int i = 1; i<=N; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        
         for(int i=0; i<M; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            graph_list.get(a).add(b);
-            graph_list.get(b).add(a);
+            
+            graph[a].add(b);
+            graph[b].add(a);
         }
-        visited[1] = true;
-        DFS(1);
-        System.out.println(cout);
+        dfs(1);
+        System.out.println(answer);
     }
     
-    static void DFS(int n) {
-        for(int i=0; i<graph_list.get(n).size(); i++) {
-            int next_node = graph_list.get(n).get(i);
-            if(!visited[next_node]) {
-                cout += 1;
-                visited[next_node] = true;
-                DFS(next_node);
+    static void dfs(int node) {
+        visited[node] = true;
+        for(int i=0; i<graph[node].size(); i++) {
+            int next = graph[node].get(i);
+            if(!visited[next]) {
+                dfs(next);
             }
         }
+        answer += 1;
     }
 }
