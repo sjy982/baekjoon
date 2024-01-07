@@ -1,14 +1,6 @@
 import java.io.*;
 import java.util.*;
 
-class Node {
-    int sumRain, ind;
-    Node(int sumRain, int ind) {
-        this.sumRain = sumRain;
-        this.ind = ind;
-    }
-}
-
 public class Main {
     static int[] world;
     static int H, W;
