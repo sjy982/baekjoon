@@ -25,30 +25,32 @@ public class Main {
         int sum = 0;
         int curInd = 0;
         while(curInd != W - 1) {
-            Node n = calRain(curInd);
-            sum += n.sumRain;
-            curInd = n.ind;
+            int ind = findNextBlock(curInd);
+            sum += calRain(curInd, ind);
+            curInd = ind;
         }
         System.out.println(sum);
     }
     
-    static Node calRain(int startInd) {
-        int sumRain = 0;
-        int secondMaxInd = startInd + 1;
+    static int findNextBlock(int startInd) {
+        int maxInd = startInd + 1;
         for(int i=startInd + 1; i<W; i++) {
-            if(world[startInd] <= world[i]) {
-                return new Node(sumRain, i);
-            } else {
-                sumRain += world[startInd] - world[i];
+            if(world[maxInd] < world[i]) {
+                maxInd = i;
             }
-            if(world[secondMaxInd] < world[i]) {
-                secondMaxInd = i;
+            if(world[startInd] <= world[maxInd]) {
+                return maxInd;
             }
         }
-        int sumRain2 = 0;
-        for(int i=startInd + 1; i<secondMaxInd; i++) {
-            sumRain2 += world[secondMaxInd] - world[i];
+        return maxInd;
+    }
+    
+    static int calRain(int startInd, int endInd) {
+        int result = 0;
+        int stdInd = world[startInd] <= world[endInd] ? startInd : endInd;
+        for(int i=startInd + 1; i<endInd; i++) {
+            result += world[stdInd] - world[i];
         }
-        return new Node(sumRain2, secondMaxInd);
+        return result;
     }
 }
