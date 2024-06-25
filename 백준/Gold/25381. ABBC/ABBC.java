@@ -13,8 +13,10 @@ public class Main {
             if(S.charAt(i) == 'B') {
                 queue.add(i);
             } else if(S.charAt(i) == 'C') {
-                queue.poll();
-                answer += 1;
+                if(queue.size() != 0) {
+                    queue.poll();
+                    answer += 1;
+                }
             }
         }
         
