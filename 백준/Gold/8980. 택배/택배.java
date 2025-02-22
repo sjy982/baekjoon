@@ -82,6 +82,7 @@ public class Main {
                           break;
                       } else {
                           subV -= arr[k];
+                          curV -= arr[k];
                           arr[k] = 0;
                       }
                   }
