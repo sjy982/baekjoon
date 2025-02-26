@@ -39,13 +39,20 @@ public class Main {
           prefix[i] = prefix[i - 1] + arts[i].B;
       }
       
-      long answer = prefix[1];
       int minIndex = 1;
+      long[] answerArr = new long[N + 1];
+      answerArr[1] = prefix[1];
       for(int i=2; i<=N; i++) {
-          for(int j=1; j<=i; j++) {
-              long newAnswer = (prefix[i] - prefix[j - 1]) - (arts[i].A - arts[j].A);
-              answer = Math.max(answer, newAnswer);
+          answerArr[i] = (prefix[i] - prefix[minIndex - 1]) - (arts[i].A - arts[minIndex].A);
+          if(answerArr[i] <= arts[i].B) {
+              answerArr[i] = arts[i].B;
+              minIndex = i;
           }
+      }
+      
+      long answer = 0;
+      for(int i=1; i<=N; i++) {
+          answer = Math.max(answer, answerArr[i]);
       }
       System.out.println(answer);
   }
