@@ -1,117 +1,95 @@
 import java.io.*;
 import java.util.*;
 
-class Node {
-    int w;
-    ArrayList<Integer> list;
-    Node(int w, ArrayList<Integer> list) {
-        this.w = w;
-        this.list = list;
-    }
-}
-
 class Solution {
     static int N;
-    static ArrayList<Integer> aList = new ArrayList<>();
-    static ArrayList<ArrayList<Integer>> combiScore = new ArrayList<>();
-    static Node max = new Node(-1, new ArrayList<>());
+    static ArrayList<Integer> result = new ArrayList<>();
+    static int[] answer;
+    static int maxRate = -1;
     public int[] solution(int[][] dice) {
         N = dice.length;
-        scoreDfs();
-        diceDfs(0, dice);
-        int[] answer = new int[N/2];
-        Collections.sort(max.list);
-        for(int i=0; i<max.list.size(); i++) {
-            answer[i] = max.list.get(i) + 1;
-        }
+        answer = new int[N/2];
+        dfs(0, dice);
         return answer;
     }
     
-    static void diceDfs(int ind, int[][] dice) {
-        //주사위를 N/2개 고른다. index
-        if(aList.size() == N/2) {
-            //고른 주사위에서 나올 수 있는 모든 경우의 수를 구한다.
-            ArrayList<Integer> aScore = calScore(aList, dice);
-            ArrayList<Integer> bScore = calScore(leftList(aList), dice);
-            Collections.sort(aScore);
-            Collections.sort(bScore);
-            int win = 0;
-            for(int i=0; i<aScore.size(); i++) {
-                win += binarySearch(aScore.get(i), bScore);
+    static int findAWinningRate(ArrayList<Integer> aList, ArrayList<Integer> bList, int[][] dice) {
+        int[] memo = new int[100 * (N/2) + 1];
+        for(int i=1; i<memo.length; i++) {
+            memo[i] = -1;
+        }
+        return startGame(aList, bList, dice, 0, 0, memo);
+    }
+    
+    static int startGame(ArrayList<Integer> aList, ArrayList<Integer> bList, int[][] dice, int aScore, int depth, int[] memo) {
+        if(depth == N/2) {
+            //주사위마다 하나의 수를 다 골랐다면.
+            if(memo[aScore] != -1) {
+                //이미 한 번 구했다면.
+                return memo[aScore];
             }
-            if(win > max.w) {
-                ArrayList<Integer> updateList = new ArrayList<>();
-                for(int i=0; i<aList.size(); i++) {
-                    updateList.add(aList.get(i));
+            
+            int win = findWinCompareB(aScore, 0, bList, dice, 0);
+            memo[aScore] = win;
+            return win;
+        }
+        int sum = 0;
+        
+        int aDiceInd = aList.get(depth);
+        for(int i=0; i<=5; i++) {
+            sum += startGame(aList, bList, dice, aScore + dice[aDiceInd][i], depth + 1, memo);
+        }
+        
+        return sum;
+    }
+    
+    static int findWinCompareB(int aScore, int bScore, ArrayList<Integer> bList, int[][] dice, int depth) {
+        if(depth == N/2) {
+            if(aScore > bScore) {
+                return 1;
+            }
+            return 0;
+        }
+        
+        int sum = 0;
+        int bDiceInd = bList.get(depth);
+        for(int i=0; i<=5; i++) {
+            sum += findWinCompareB(aScore, bScore + dice[bDiceInd][i], bList, dice, depth + 1);
+        }
+        return sum;
+    }
+    
+    static void dfs(int start, int[][] dice) {
+        if(result.size() == N/2) {
+            //result에는 A가 고를 주사위가 담겨져 있음.
+            ArrayList<Integer> bList = new ArrayList<>();
+            fillBList(bList, result);
+            int winRate = findAWinningRate(result, bList, dice);
+            if(maxRate < winRate) {
+                maxRate = winRate;
+                for(int i=0; i<result.size(); i++) {
+                    answer[i] = result.get(i) + 1;
                 }
-                max = new Node(win, updateList);
-            } 
+            }
             return;
         }
-        for(int i=ind; i<N; i++) {
-            aList.add(i);
-            diceDfs(i+1, dice);
-            aList.remove(aList.size() - 1);
+        
+        for(int i=start; i<=N-1; i++) {
+            result.add(i);
+            dfs(i + 1, dice);
+            result.remove(result.size() - 1);
         }
     }
     
-    static int binarySearch(int v, ArrayList<Integer> bScore) {
-        int minInd = 0;
-        int maxInd = bScore.size() - 1;
-        while(minInd <= maxInd) {
-            int midInd = (minInd + maxInd) / 2;
-            if(v <= bScore.get(midInd)) {
-                maxInd = midInd - 1;
-            } else {
-                minInd = midInd + 1;
-            }
-        }
-        return maxInd + 1;
-    }
-    
-    static void scoreDfs() {
-        if(aList.size() == N/2) {
-            combiScore.add(new ArrayList<>());
+    static void fillBList(ArrayList<Integer> bList, ArrayList<Integer> aList) {
+        boolean[] visited = new boolean[N];
             for(int i=0; i<aList.size(); i++) {
-                combiScore.get(combiScore.size() - 1).add(aList.get(i));
+                visited[aList.get(i)] = true;
             }
-            return;
-        }
-        for(int i=0; i<6; i++) {
-            aList.add(i);
-            scoreDfs();
-            aList.remove(aList.size() - 1);
-        }
-    }
-    
-    static ArrayList<Integer> calScore(ArrayList<Integer> list, int[][] dice) {
-        ArrayList<Integer> result = new ArrayList<>();
-        for(int i=0; i<combiScore.size(); i++) {
-            int score = 0;
-            for(int j=0; j<combiScore.get(i).size(); j++) {
-                score += dice[list.get(j)][combiScore.get(i).get(j)];
+            for(int i=0; i<N; i++) {
+                if(!visited[i]) {
+                    bList.add(i);
+                }
             }
-            result.add(score);
-        }
-        return result;
-    }
-    
-    static ArrayList<Integer> leftList(ArrayList<Integer> a) {
-        ArrayList<Integer> result = new ArrayList<>();
-        for(int i=0; i<N; i++) {
-            if(!checkValue(a, i)) {
-                result.add(i);
-            }
-        }
-        return result;
-    }
-    
-    static boolean checkValue(ArrayList<Integer> a, int v) {
-        for(int i=0; i<a.size(); i++) {
-            if(a.get(i) == v) {
-                return true;
-            }
-        }
-        return false;
     }
 }
