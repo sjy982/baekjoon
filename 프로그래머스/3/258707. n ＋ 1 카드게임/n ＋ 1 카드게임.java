@@ -1,91 +1,76 @@
-import java.io.*;
 import java.util.*;
 
 class Solution {
-    static int N, tSum; //target sum
+    static int N;
     public int solution(int coin, int[] cards) {
         N = cards.length;
-        tSum = N + 1;
-        HashMap<Integer, Boolean> deck = new HashMap<>(); //현재 덱
-        int pCnt = 0; //진행할 수 있는 횟수
+        int pass = 0;
+        int passC1 = 0;
+        int passC2 = 0;
+        boolean[] deck = new boolean[N + 1];
         
-        HashMap<Integer, Boolean> fDeck = new HashMap<>(); //미래 덱
-        int fPCnt = 0; //미래 진행할 수 있는 횟수.
-        
-        for(int i=0; i<N/3; i++) {
-            int pair = tSum - cards[i];
-            if(deck.get(pair) == null) {
-                //내 짝이 아직 없다면.
-                deck.put(cards[i], true);
-            } else {
-                //짝이 있다면.
-                deck.remove(pair); //삭제
-                pCnt += 1; //진행 횟수 증가.
+        for(int i=0; i < N/3; i++) {
+            deck[cards[i]] = true;
+            int target = N + 1 - cards[i];
+            if(deck[target]) {
+                pass += 1;
             }
         }
         
-        //이제 라운드 진행.
-        int curRound = 1; //현재 라운드.
-        int cursor = N/3;
-        while(true) {
-            if(cursor < N) {
-                //cursor가 N보다 작다면
-                //두 장을 뽑는다.
-                ArrayList<Integer> list = new ArrayList<>();
-                list.add(cards[cursor]);
-                list.add(cards[cursor + 1]);
-                cursor += 2;
-                
-                for(int i=0; i<2; i++) {
-                    int num = list.get(i);
-                    int pair = tSum - num; //짝 넘버.
-                    if(deck.get(pair) != null && 1 <= coin) {
-                        //짝이 있으면서, 코인이 하나 이상 있다면.
-                        deck.remove(pair); //짝 지워주고.
-                        coin -= 1; //코인 하나 줄여주고,
-                        pCnt += 1; //진행 횟수 증가.
-                    } else if(deck.get(pair) == null) {
-                        //짝이 현재 덱에 없다면. 미래 덱에서 찾아본다.
-                        if(fDeck.get(pair) != null) {
-                            //미래 덱에 있다면.
-                            fDeck.remove(pair); //짝 지워주고.
-                            fPCnt += 1; //나중에 사용될 수 있는 진행 횟수를 증가시킨다. 이 횟수를 사용하려면 coin 2개 필요.
-                        } else {
-                            //미래 덱에 없다면. 넣어준다.
-                            fDeck.put(num, true);
-                        }
-                    }
-                }
-            } else {
-                break;
+        //라운드 진행
+        boolean[] dropDeck = new boolean[N + 1]; //코인 하나를 소모해서 가질 수 있는 deck
+        int answer = 1;
+        for(int i=N/3; i < N; i+=2) {
+            int[] draw = {cards[i], cards[i + 1]};
+            for(int j=0; j<2; j++) {
+                dropDeck[draw[j]] = true;
+                int[] result = findPassCoin(draw[j], N, deck, dropDeck);
+                passC1 += result[0];
+                passC2 += result[1];
             }
             
-            //카드 두 개를 뽑고, 처리가 되면 이제 라운드를 진행할 수 있는 지를 체크한다.
-            if(pCnt >= 1) {
-                //진행 가능.
-                pCnt -= 1; //감소
-                curRound += 1; //다음 라운드
-            } else {
-                //pCnt가 0이라면.
-                //fPCnt로 가능한지 봐야됨.
-                if(fPCnt >= 1) {
-                    //fPCnt를 사용하기 위해서는 2개의 코인이 필요하다.
-                    if(coin >= 2) {
-                        fPCnt -= 1;
-                        coin -= 2;
-                        curRound += 1;
-                    } else {
-                        //코인이 두 개 이상 없다면. 더 이상 진행 불가.
-                        break;
-                    }
-                } else {
-                    //fPCnt도 없다면. 진행 불가.
-                    break;
-                }
+            //라운드 진행가능한지
+            if(pass >= 1) {
+                pass -= 1;
+                answer += 1;
+                continue;
             }
+            
+            //coin 하나 소모
+            if(coin >= 1 && passC1 >= 1) {
+                coin -= 1;
+                passC1 -= 1;
+                answer += 1;
+                continue;
+            }
+            
+            //coin 두개 소모
+            if(coin >= 2 && passC2 >= 1) {
+                coin -= 2;
+                passC2 -= 1;
+                answer += 1;
+                continue;
+            }
+            
+            // 불가능한 경우임 game over
+            break;
         }
         
-        curRound = curRound > N/2 ? N/2 : curRound;
-        return curRound;
+        return answer;
     }
+    
+    static int[] findPassCoin(int card, int N, boolean[] deck, boolean[] dropDeck) {
+        int[] result = new int[2];
+        int target = N + 1 - card;
+        if(deck[target]) {
+            result[0] += 1;
+        } else {
+            //coin 하나로 불가능하다면
+            if(dropDeck[target]) {
+                result[1] += 1;
+            }
+        }
+        return result;
+    }
+    
 }
