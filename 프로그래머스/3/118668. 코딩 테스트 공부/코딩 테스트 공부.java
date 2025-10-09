@@ -1,59 +1,53 @@
-import java.io.*;
 import java.util.*;
 
 class Solution {
     public int solution(int alp, int cop, int[][] problems) {
-        int[][] dp = new int[151][151]; //Integer.MAX_VALUE는 없는 경우라고 생각하면 됨.
-        init(dp);
-        dp[alp][cop] = 0;
-        for(int i=alp; i<=150; i++) {
-            for(int j=cop; j<=150; j++) {
-                if(dp[i][j] != Integer.MAX_VALUE) {
-                    //경우가 존재한다면.
-                    if(i < 150) {
-                        //알고력을 높이는 경우.
-                        dp[i + 1][j] = Math.min(dp[i + 1][j], dp[i][j] + 1);
-                    }
-                    if(j < 150) {
-                        //코딩력을 높이는 경우
-                        dp[i][j + 1] = Math.min(dp[i][j + 1], dp[i][j] + 1);
-                    }
-                    
-                    //문제를 푸는 경우
-                    for(int k=0; k<problems.length; k++) {
-                        if((problems[k][0] <= i) && (problems[k][1] <= j)) {
-                            //문제를 풀 수 있다면.
-                            int nextAlgo = i + problems[k][2] >= 150 ? 150 : i + problems[k][2];
-                            int nextCodi = j + problems[k][3] >= 150 ? 150 : j + problems[k][3];
-                            int time = problems[k][4];
-                            dp[nextAlgo][nextCodi] = Math.min(dp[nextAlgo][nextCodi], dp[i][j] + time);
-                        }
-                    }
-                }
-            }
-        }
-        
-        int maxAlgo = -1;
-        int maxCodi = -1;
+        int targetAlp  = alp; //알고력
+        int targetCop = cop; //코딩력
         for(int i=0; i<problems.length; i++) {
-            maxAlgo = Math.max(maxAlgo, problems[i][0]);
-            maxCodi = Math.max(maxCodi, problems[i][1]);
+            targetAlp = Math.max(targetAlp, problems[i][0]);
+            targetCop = Math.max(targetCop, problems[i][1]);
         }
         
-        int answer = Integer.MAX_VALUE;
-        for(int i=maxAlgo; i<=150; i++) {
-            for(int j=maxCodi; j<=150; j++) {
-                answer = Math.min(answer, dp[i][j]);
+        int[][] dp = new int[targetAlp + 1][targetCop + 1];
+        for(int i=alp; i<=targetAlp; i++) {
+            for(int j=cop; j<=targetCop; j++) {
+                dp[i][j] = Integer.MAX_VALUE;
+            }
+        }
+        dp[alp][cop] = 0;
+        for(int i=alp; i<=targetAlp; i++) {
+            for(int j=cop; j<=targetCop; j++) {
+                if(dp[i][j] == Integer.MAX_VALUE) {
+                    continue;
+                }
+                if(i == targetAlp && j == targetCop) {
+                    continue;
+                }
+                
+                //알고력 높이기.
+                int nextAlg = i + 1 >= targetAlp ? targetAlp : i + 1;
+                dp[nextAlg][j] = Math.min(dp[nextAlg][j], dp[i][j] + 1);
+                
+                //코딩력 높이기
+                int nextCop = j + 1 >= targetCop ? targetCop : j + 1;
+                dp[i][nextCop] = Math.min(dp[i][nextCop], dp[i][j] + 1);
+                
+                solve(i, j, targetAlp, targetCop, dp, problems);
             }
         }
         
-        return answer;
+        return dp[targetAlp][targetCop];
     }
     
-    static void init(int[][] arr) {
-        for(int i=0; i<arr.length; i++) {
-            for(int j=0; j<arr[i].length; j++) {
-                arr[i][j] = Integer.MAX_VALUE;
+    static void solve(int alp, int cop, int maxAlp, int maxCop, int[][] dp, int[][] problems) {
+        for(int i=0; i<problems.length; i++) {
+            if(problems[i][0] <= alp && problems[i][1] <= cop) {
+                //풀 수 있다면
+                int nextAlp = alp + problems[i][2] >= maxAlp ? maxAlp : alp + problems[i][2];
+                int nextCop = cop + problems[i][3] >= maxCop ? maxCop : cop + problems[i][3];
+                
+                dp[nextAlp][nextCop] = Math.min(dp[nextAlp][nextCop], dp[alp][cop] + problems[i][4]);
             }
         }
     }
